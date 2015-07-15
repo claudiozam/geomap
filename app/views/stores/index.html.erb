@@ -23,7 +23,7 @@
   var geocoder;
   var map;
   var markers = [];
-
+  var currentMarker = null;
 
   function setAllMap(map) {
     for (var i = 0; i < markers.length; i++) {
@@ -34,6 +34,24 @@
   function clearMarkers() {
     setAllMap(null);
     markers = [];
+  }
+
+  function getUserLocationAndDirections() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(currentUserLocationAndDirections, currentUserLocationError);
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+  }
+
+  function currentUserLocationAndDirections(position) {
+      // +
+      //position.coords.longitude;
+      window.open('https://www.google.com/maps/dir/' + position.coords.latitude +',' + position.coords.longitude + '/' + currentMarker.position.lat() + ',' + currentMarker.position.lng(), '_blank'); 
+  }
+
+  function currentUserLocationError(error) {
+    alert(error);
   }
 
   function initialize() {
@@ -77,7 +95,6 @@
   }
 
   function createInfoWindow(marker) {
-
     var contentString = '<div id="content">'+
       '<div id="siteNotice">'+
       '</div>'+
@@ -95,7 +112,7 @@
       'Heritage Site.</p>'+
       '<p>Attribution: Uluru, <a href="https://en.wikipedia.org/w/index.php?title=Uluru&oldid=297882194">'+
       'https://en.wikipedia.org/w/index.php?title=Uluru</a> '+
-      '(last visited June 22, 2009).</p>'+
+      '(last visited June 22, 2009).</p><a href="#" onclick="getUserLocationAndDirections()">Como viajo al lugar???</a>'+
       '</div>'+
       '</div>';
 
@@ -106,6 +123,7 @@
     marker.infoWindow = infowindow;
 
     google.maps.event.addListener(marker, 'click', function() {
+      currentMarker = marker;
       map.setCenter(marker.getPosition());
       infowindow.open(map, marker);
     });
